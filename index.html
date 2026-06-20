@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جيكول AI | Jekool AI</title>
+    <title>جيكول AI | لوحة صناعة المحتوى</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,83 +15,147 @@
             flex-direction: column;
             min-height: 100vh;
             align-items: center;
-            justify-content: center;
-            text-align: center;
         }
         .container {
-            max-width: 600px;
-            padding: 30px;
+            max-width: 700px;
+            width: 90%;
+            padding: 25px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 16px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            border: 1px border rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(4px);
-            margin: 20px;
+            margin: 30px auto;
         }
         h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #ffca28;
-            margin-bottom: 10px;
+            text-align: center;
+            margin-bottom: 25px;
         }
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: #9ca3af;
-        }
-        .features {
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
             text-align: right;
-            margin: 30px 0;
-            padding: 0;
-            list-style: none;
+            color: #ffca28;
         }
-        .features li {
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background-color: #111827;
+            color: #fff;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            text-align: right;
         }
-        .features li::before {
-            content: "✨";
-            margin-left: 10px;
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffca28;
         }
         .btn {
-            display: inline-block;
+            width: 100%;
             background-color: #ffca28;
             color: #0b0f19;
-            padding: 12px 30px;
+            padding: 14px;
+            border: none;
             border-radius: 8px;
-            text-decoration: none;
             font-weight: bold;
             font-size: 1.1rem;
+            cursor: pointer;
             transition: 0.3s ease;
         }
         .btn:hover {
             background-color: #ffe082;
-            transform: translateY(-2px);
+        }
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #111827;
+            border-radius: 8px;
+            border-right: 4px solid #ffca28;
+            display: none;
+            text-align: right;
+        }
+        .result-box h3 {
+            margin-top: 0;
+            color: #ffca28;
+        }
+        .loading {
+            display: none;
+            color: #ffca28;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
         }
         footer {
-            margin-top: 40px;
+            margin-top: auto;
+            padding: 20px;
             font-size: 0.9rem;
             color: #4b5563;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>🚀 جيكول AI | Jekool AI</h1>
-        <p>منصتك الذكية والمتكاملة لصناعة المحتوى الرقمي والوثائقيات بعمق وخيال لا حدود له.</p>
+        <h1>🚀 جيكول AI - صانع السكربتات الذكي</h1>
         
-        <ul class="features">
-            <li>كتابة سكربتات احترافية ومعمقة ومبنية على أبحاث دقيقة.</li>
-            <li>توليد أفكار إبداعية ومبتكرة لمنصات اليوتيوب والتواصل الاجتماعي.</li>
-            <li>تحليلات ذكية ومخصصة تساعد صناع المحتوى على النمو.</li>
-        </ul>
+        <label for="topic">عنون الفيديو أو الفكرة الرئيسيّة:</label>
+        <input type="text" id="topic" placeholder="مثال: أسرار الثقوب السوداء في الكون">
 
-        <a href="#" class="btn">ترقبوا الإطلاق القريب التجريبي</a>
-        
-        <footer>جميع الحقوق محفوظة © 2026 جيكول AI</footer>
+        <label for="duration">مدة السكربت المطلوبة:</label>
+        <select id="duration">
+            <option value="short">فيديو قصير (Shorts / Reels) - دقيقة</option>
+            <option value="medium">فيديو يوتيوب متوسط - 5 دقائق</option>
+            <option value="long">وثائقي عميق - 15 دقيقة</option>
+        </select>
+
+        <button class="btn" onclick="generateScript()">توليد السكربت بالذكاء الاصطناعي ✨</button>
+
+        <div class="loading" id="loadingText">جاري التفكير وصياغة السكربت بعمق... 🧠</div>
+
+        <div class="result-box" id="resultBox">
+            <h3>📜 السكربت الجاهز:</h3>
+            <p id="scriptOutput"></p>
+        </div>
     </div>
+
+    <footer>جميع الحقوق محفوظة © 2026 جيكول AI</footer>
+
+    <script>
+        function generateScript() {
+            var topic = document.getElementById('topic').value;
+            if(topic.trim() === "") {
+                alert("من فضلك أدخل عنواناً أو فكرة أولاً يا صديقي!");
+                return;
+            }
+
+            document.getElementById('loadingText').style.display = 'block';
+            document.getElementById('resultBox').style.display = 'none';
+
+            // محاكاة وقت التفكير للذكاء الاصطناعي لمدة ثانيتين
+            setTimeout(function() {
+                document.getElementById('loadingText').style.display = 'none';
+                
+                var output = "**[المقدمة - صوت جهوري وموسيقى غامضة]**\n" +
+                             "هل تساءلت يوماً كيف يمكن لشيء لا نراه أن يغير مسار المجرات؟ في هذا الفيديو عن **(" + topic + ")**، سنغوص معاً في أعماق التفاصيل لنكشف ما لم يخبرك به أحد من قبل...\n\n" +
+                             "**[المشهد الأول - صياغة الفكرة]**\n" +
+                             "البيانات الأولية تشير إلى أن هذا الموضوع يمتلك أبعاداً أعمق مما نتخيل. بناءً على طلبك، تم إعداد محتوى مكثف ومناسب تماماً للمدة التي اخترتها لتضمن أعلى نسبة احتفاظ بالجمهور.\n\n" +
+                             "**[الخاتمة والدعوة للإجراء]**\n" +
+                             "إذا أذهلتك هذه الحقائق عن " + topic + "، لا تنسَ الاشتراك في القناة وتفعيل الجرس لترافقنا في الرحلة القادمة!";
+                
+                // تحويل السطور البرمجية إلى أسطر حقيقية في الصفحة
+                document.getElementById('scriptOutput').innerText = output;
+                document.getElementById('resultBox').style.display = 'block';
+            }, 2000);
+        }
+    </script>
 
 </body>
 </html>
+
