@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جيكول AI | المحرك الذكي المستقر</title>
+    <title>جيكول AI | النسخة المستقرة</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -144,11 +144,11 @@
             document.getElementById('loadingText').style.display = 'block';
             document.getElementById('resultBox').style.display = 'none';
 
-            var promptText = `اكتب سكربت فيديو مشوق واحترافي ومتكامل باللغة العربية عن موضوع: "${topic}" وبمدة: ${duration}. قم بوضع توجيهات للمشاهد والمؤثرات الصوتية.`;
+            var promptText = `اكتب سكربت فيديو مشوق واحترافي ومتكامل باللغة العربية عن موضوع: "${topic}" وبمدة: ${duration}.`;
 
             try {
-                // تعديل الرابط إلى v1 المستقر والمدعوم رسمياً
-                var response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                // الاعتماد على النموذج الرئيسي والمستقر gemini-pro لحل مشكلة التوافقية تماماً
+                var response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
