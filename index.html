@@ -114,13 +114,13 @@
         <h1>🚀 جيكول AI - المحرك الذكي الشامل</h1>
         
         <div class="api-section" id="apiSection">
-            <label for="apiKey">مفتاح الـ API الخاص بك من Google (يُحفظ بأمان في جهازك):</label>
-            <input type="password" id="apiKey" placeholder="الِصق هنا مفتاح AI Studio السرّي...">
-            <button class="btn" style="padding: 8px; font-size: 0.9rem; background-color: #4b5563; color: white;" onclick="saveKey()">حفظ المفتاح في المتصفح 🔒</button>
+            <label for="apiKey">مفتاح الـ API الخاص بك من Google:</label>
+            <input type="password" id="apiKey" placeholder="الِصق هنا مفتاح AI Studio السرّي الجديد...">
+            <button class="btn" style="padding: 8px; font-size: 0.9rem; background-color: #10b981; color: white;" onclick="saveKey()">حفظ وتحديث المفتاح 🔒</button>
         </div>
 
         <label for="topic">عنون الفيديو أو الفكرة الرئيسيّة:</label>
-        <input type="text" id="topic" placeholder="اكتب أي موضوع في العالم (مثال: أسرار الأهرامات، مهارات الإقناع)">
+        <input type="text" id="topic" placeholder="اكتب أي موضوع في العالم (مثال: أسرار الأهرامات)">
 
         <label for="duration">مدة السكربت المطلوبة:</label>
         <select id="duration">
@@ -131,7 +131,7 @@
 
         <button class="btn" onclick="generateScriptFromAI()">توليد السكربت بالذكاء الاصطناعي الحقيقي ✨</button>
 
-        <div class="loading" id="loadingText">جاري الاتصال بـ Gemini وصياغة السكربت الاحترافي... 🧠</div>
+        <div class="loading" id="loadingText">جاري صياغة السكربت الاحترافي بواسطة Gemini... 🧠</div>
 
         <div class="result-box" id="resultBox">
             <h3>📜 السكربت الذكي الجاهز:</h3>
@@ -142,12 +142,10 @@
     <footer>جميع الحقوق محفوظة © 2026 جيكول AI</footer>
 
     <script>
-        // تحميل المفتاح تلقائياً إذا كان محفوظاً سابقاً
         window.onload = function() {
             var savedKey = localStorage.getItem('user_gemini_key');
             if(savedKey) {
                 document.getElementById('apiKey').value = savedKey;
-                document.getElementById('apiSection').style.border = "1px solid #10b981";
             }
         }
 
@@ -158,17 +156,17 @@
                 return;
             }
             localStorage.setItem('user_gemini_key', key);
-            alert("تم حفظ المفتاح بأمان في متصفح هاتفك! لن تحتاجه مجدداً.");
-            document.getElementById('apiSection').style.border = "1px solid #10b981";
+            alert("تم تحديث وحفظ المفتاح بنجاح!");
         }
 
         async function generateScriptFromAI() {
             var topic = document.getElementById('topic').value.trim();
             var duration = document.getElementById('duration').value;
-            var apiKey = localStorage.getItem('user_gemini_key') || document.getElementById('apiKey').value.trim();
+            // نأخذ القيمة المكتوبة في الخانة مباشرة لتجنب الأخطاء السابقة
+            var apiKey = document.getElementById('apiKey').value.trim();
 
             if(!apiKey) {
-                alert("من فضلك الصق مفتاح الـ API الخاص بك أولاً واضغط حفظ ليتمكن الموقع من العمل!");
+                alert("من فضلك الصق مفتاح الـ API الخاص بك أولاً!");
                 return;
             }
             if(topic === "") {
@@ -179,12 +177,11 @@
             document.getElementById('loadingText').style.display = 'block';
             document.getElementById('resultBox').style.display = 'none';
 
-            // صياغة الأمر الموجه لعقل الذكاء الاصطناعي بدقة
             var promptText = `أنت صانع محتوى محترف ومخرج وثائقيات. اكتب سكربت فيديو يوتيوب كامل واحترافي باللغة العربية عن موضوع: "${topic}". مدة الفيديو المطلوبة هي: ${duration}. قم بتقسيم السكربت إلى: عنوان مقترح، مقدمة مشوقة مع المؤثرات الصوتية والبصرية بين أقواس مربعة []، مشاهد متسلسلة مشروحة، وخاتمة تحتوي على دعوة للتفاعل والاشتراك في القناة. اجعل الأسلوب جذاباً ومثيراً للاهتمام.`;
 
             try {
-                // الاتصال المباشر بـ API الخاص بـ Google Gemini
-                var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                // استخدام نموذج gemini-1.5-flash الحديث والمستقر
+                var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
@@ -195,22 +192,19 @@
 
                 if(data.candidates && data.candidates[0].content.parts[0].text) {
                     var aiText = data.candidates[0].content.parts[0].text;
-                    // تنظيف بعض العلامات مثل النجوم الزائدة لتبدو جميلة
                     aiText = aiText.replace(/\*\*/g, '');
                     document.getElementById('scriptOutput').innerText = aiText;
                     document.getElementById('resultBox').style.display = 'block';
                 } else {
-                    document.getElementById('scriptOutput').innerText = "عذراً، حدث خطأ في استجابة الذكاء الاصطناعي. تأكد من صحة المفتاح.";
+                    document.getElementById('scriptOutput').innerText = "خطأ: تأكد من نسخ المفتاح الكامل من مربع الحوار (Pop-up) الذي ظهر في الصورة الأخيرة وليس من الواجهة الخلفية.";
                     document.getElementById('resultBox').style.display = 'block';
                 }
 
             } catch (error) {
                 document.getElementById('loadingText').style.display = 'none';
-                alert("حدث خطأ أثناء الاتصال بالخادم، تأكد من اتصالك بالإنترنت وصحة المفتاح.");
-                console.error(error);
+                alert("حدث خطأ أثناء الاتصال بالخادم، تأكد من صحة المفتاح.");
             }
         }
     </script>
-
 </body>
 </html>
