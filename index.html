@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جيكول AI | المحرك الذكي الكامل</title>
+    <title>جيكول AI | النسخة المكتشفة للأخطاء</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,7 +40,7 @@
             text-align: right;
             color: #ffca28;
         }
-        input[type="text"], input[type="password"], select {
+        input[type="text"], input[type="text"]#apiKey, select {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -50,11 +50,7 @@
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 1rem;
-            text-align: right;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #ffca28;
+            text-align: left; /* جعل النص يسار لكي يظهر المفتاح بوضوح عند اللصق */
         }
         .btn {
             width: 100%;
@@ -99,88 +95,58 @@
             margin-bottom: 20px;
             border: 1px dashed #ffca28;
         }
-        footer {
-            margin-top: auto;
-            padding: 20px;
-            font-size: 0.9rem;
-            color: #4b5563;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>🚀 جيكول AI - المحرك الذكي الشامل</h1>
+        <h1>🚀 جيكول AI - كاشف الأخطاء والسكربتات</h1>
         
-        <div class="api-section" id="apiSection">
-            <label for="apiKey">مفتاح الـ API الخاص بك من Google:</label>
-            <input type="password" id="apiKey" placeholder="الِصق هنا مفتاح AI Studio السرّي الجديد...">
-            <button class="btn" style="padding: 8px; font-size: 0.9rem; background-color: #10b981; color: white;" onclick="saveKey()">حفظ وتحديث المفتاح 🔒</button>
+        <div class="api-section">
+            <label style="text-align: right;">مفتاح الـ API الخاص بك (تأكد أنه يبدأ بـ AIza):</label>
+            <input type="text" id="apiKey" placeholder="امسح أي شيء هنا ثم الصق المفتاح الحقيقي المنسوخ...">
         </div>
 
-        <label for="topic">عنون الفيديو أو الفكرة الرئيسيّة:</label>
-        <input type="text" id="topic" placeholder="اكتب أي موضوع في العالم (مثال: أسرار الأهرامات)">
+        <label for="topic">عنوان الفيديو أو الفكرة الرئيسية:</label>
+        <input type="text" id="topic" style="text-align: right;" placeholder="مثال: أسرار الأهرامات">
 
         <label for="duration">مدة السكربت المطلوبة:</label>
-        <select id="duration">
-            <option value="قصير جداً (Shorts)">فيديو قصير (Shorts / Reels) - دقيقة</option>
-            <option value="متوسط (5 دقائق)">فيديو يوتيوب متوسط - 5 دقائق</option>
-            <option value="وثائقي طويل (15 دقيقة)">وثائقي عميق - 15 دقيقة</option>
+        <select id="duration" style="text-align: right;">
+            <option value="قصير جداً (Shorts)">فيديو قصير (Shorts) - دقيقة</option>
+            <option value="متوسط (5 دقائق)">فيديو متوسط - 5 دقائق</option>
         </select>
 
-        <button class="btn" onclick="generateScriptFromAI()">توليد السكربت بالذكاء الاصطناعي الحقيقي ✨</button>
+        <button class="btn" onclick="generateScriptFromAI()">توليد السكربت بالذكاء الاصطناعي ✨</button>
 
-        <div class="loading" id="loadingText">جاري صياغة السكربت الاحترافي بواسطة Gemini... 🧠</div>
+        <div class="loading" id="loadingText">جاري الاتصال بـ Gemini ومحاولة التوليد... 🧠</div>
 
         <div class="result-box" id="resultBox">
-            <h3>📜 السكربت الذكي الجاهز:</h3>
-            <p id="scriptOutput" style="white-space: pre-line;"></p>
+            <h3 id="resultTitle">📜 السكربت الذكي الجاهز:</h3>
+            <p id="scriptOutput" style="white-space: pre-line; text-align: right;"></p>
         </div>
     </div>
 
-    <footer>جميع الحقوق محفوظة © 2026 جيكول AI</footer>
-
     <script>
-        window.onload = function() {
-            var savedKey = localStorage.getItem('user_gemini_key');
-            if(savedKey) {
-                document.getElementById('apiKey').value = savedKey;
-            }
-        }
-
-        function saveKey() {
-            var key = document.getElementById('apiKey').value.trim();
-            if(key === "") {
-                alert("الرجاء لصق المفتاح أولاً!");
-                return;
-            }
-            localStorage.setItem('user_gemini_key', key);
-            alert("تم تحديث وحفظ المفتاح بنجاح!");
-        }
-
         async function generateScriptFromAI() {
             var topic = document.getElementById('topic').value.trim();
             var duration = document.getElementById('duration').value;
-            // نأخذ القيمة المكتوبة في الخانة مباشرة لتجنب الأخطاء السابقة
             var apiKey = document.getElementById('apiKey').value.trim();
 
             if(!apiKey) {
-                alert("من فضلك الصق مفتاح الـ API الخاص بك أولاً!");
+                alert("من فضلك الصق المفتاح في الخانة أولاً!");
                 return;
             }
             if(topic === "") {
-                alert("من فضلك أدخل عنواناً أو موضوعاً أولاً!");
+                alert("من فضلك أدخل موضوعاً أولاً!");
                 return;
             }
 
             document.getElementById('loadingText').style.display = 'block';
             document.getElementById('resultBox').style.display = 'none';
 
-            var promptText = `أنت صانع محتوى محترف ومخرج وثائقيات. اكتب سكربت فيديو يوتيوب كامل واحترافي باللغة العربية عن موضوع: "${topic}". مدة الفيديو المطلوبة هي: ${duration}. قم بتقسيم السكربت إلى: عنوان مقترح، مقدمة مشوقة مع المؤثرات الصوتية والبصرية بين أقواس مربعة []، مشاهد متسلسلة مشروحة، وخاتمة تحتوي على دعوة للتفاعل والاشتراك في القناة. اجعل الأسلوب جذاباً ومثيراً للاهتمام.`;
+            var promptText = `اكتب سكربت فيديو مشوق وقصير عن موضوع: "${topic}" وبمدة: ${duration}.`;
 
             try {
-                // استخدام نموذج gemini-1.5-flash الحديث والمستقر
                 var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -189,20 +155,27 @@
 
                 var data = await response.json();
                 document.getElementById('loadingText').style.display = 'none';
+                document.getElementById('resultBox').style.display = 'block';
 
+                // إذا نجح التوليد
                 if(data.candidates && data.candidates[0].content.parts[0].text) {
-                    var aiText = data.candidates[0].content.parts[0].text;
-                    aiText = aiText.replace(/\*\*/g, '');
-                    document.getElementById('scriptOutput').innerText = aiText;
-                    document.getElementById('resultBox').style.display = 'block';
+                    document.getElementById('resultTitle').innerText = "📜 السكربت الذكي الجاهز:";
+                    document.getElementById('scriptOutput').innerText = data.candidates[0].content.parts[0].text;
+                } 
+                // إذا أرسلت جوجل رسالة خطأ محددة سنعرضها هنا فوراً
+                else if (data.error) {
+                    document.getElementById('resultTitle').innerText = "❌ خطأ قادم من سيرفر جوجل:";
+                    document.getElementById('scriptOutput').innerText = `رمز الخطأ: ${data.error.status}\nالرسالة: ${data.error.message}`;
                 } else {
-                    document.getElementById('scriptOutput').innerText = "خطأ: تأكد من نسخ المفتاح الكامل من مربع الحوار (Pop-up) الذي ظهر في الصورة الأخيرة وليس من الواجهة الخلفية.";
-                    document.getElementById('resultBox').style.display = 'block';
+                    document.getElementById('resultTitle').innerText = "❌ خطأ غير معروف:";
+                    document.getElementById('scriptOutput').innerText = JSON.stringify(data);
                 }
 
             } catch (error) {
                 document.getElementById('loadingText').style.display = 'none';
-                alert("حدث خطأ أثناء الاتصال بالخادم، تأكد من صحة المفتاح.");
+                document.getElementById('resultBox').style.display = 'block';
+                document.getElementById('resultTitle').innerText = "❌ خطأ في الاتصال بالشبكة:";
+                document.getElementById('scriptOutput').innerText = error.message;
             }
         }
     </script>
