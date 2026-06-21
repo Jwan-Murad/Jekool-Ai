@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جيكول AI | لوحة صناعة المحتوى</title>
+    <title>جيكول AI | المحرك الذكي الكامل</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,7 +40,7 @@
             text-align: right;
             color: #ffca28;
         }
-        input[type="text"], select {
+        input[type="text"], input[type="password"], select {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -92,6 +92,13 @@
             font-weight: bold;
             text-align: center;
         }
+        .api-section {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px dashed #ffca28;
+        }
         footer {
             margin-top: auto;
             padding: 20px;
@@ -104,24 +111,30 @@
 <body>
 
     <div class="container">
-        <h1>🚀 جيكول AI - صانع السكربتات الذكي</h1>
+        <h1>🚀 جيكول AI - المحرك الذكي الشامل</h1>
         
+        <div class="api-section" id="apiSection">
+            <label for="apiKey">مفتاح الـ API الخاص بك من Google (يُحفظ بأمان في جهازك):</label>
+            <input type="password" id="apiKey" placeholder="الِصق هنا مفتاح AI Studio السرّي...">
+            <button class="btn" style="padding: 8px; font-size: 0.9rem; background-color: #4b5563; color: white;" onclick="saveKey()">حفظ المفتاح في المتصفح 🔒</button>
+        </div>
+
         <label for="topic">عنون الفيديو أو الفكرة الرئيسيّة:</label>
-        <input type="text" id="topic" placeholder="أدخل: الثورة الصناعية أو الثقوب السوداء">
+        <input type="text" id="topic" placeholder="اكتب أي موضوع في العالم (مثال: أسرار الأهرامات، مهارات الإقناع)">
 
         <label for="duration">مدة السكربت المطلوبة:</label>
         <select id="duration">
-            <option value="short">فيديو قصير (Shorts / Reels) - دقيقة</option>
-            <option value="medium">فيديو يوتيوب متوسط - 5 دقائق</option>
-            <option value="long">وثائقي عميق - 15 دقيقة</option>
+            <option value="قصير جداً (Shorts)">فيديو قصير (Shorts / Reels) - دقيقة</option>
+            <option value="متوسط (5 دقائق)">فيديو يوتيوب متوسط - 5 دقائق</option>
+            <option value="وثائقي طويل (15 دقيقة)">وثائقي عميق - 15 دقيقة</option>
         </select>
 
-        <button class="btn" onclick="generateScript()">توليد السكربت بالذكاء الاصطناعي ✨</button>
+        <button class="btn" onclick="generateScriptFromAI()">توليد السكربت بالذكاء الاصطناعي الحقيقي ✨</button>
 
-        <div class="loading" id="loadingText">جاري استدعاء البيانات وتنسيق المشاهد الفنية... 🧠</div>
+        <div class="loading" id="loadingText">جاري الاتصال بـ Gemini وصياغة السكربت الاحترافي... 🧠</div>
 
         <div class="result-box" id="resultBox">
-            <h3>📜 السكربت الجاهز:</h3>
+            <h3>📜 السكربت الذكي الجاهز:</h3>
             <p id="scriptOutput" style="white-space: pre-line;"></p>
         </div>
     </div>
@@ -129,51 +142,73 @@
     <footer>جميع الحقوق محفوظة © 2026 جيكول AI</footer>
 
     <script>
-        function generateScript() {
+        // تحميل المفتاح تلقائياً إذا كان محفوظاً سابقاً
+        window.onload = function() {
+            var savedKey = localStorage.getItem('user_gemini_key');
+            if(savedKey) {
+                document.getElementById('apiKey').value = savedKey;
+                document.getElementById('apiSection').style.border = "1px solid #10b981";
+            }
+        }
+
+        function saveKey() {
+            var key = document.getElementById('apiKey').value.trim();
+            if(key === "") {
+                alert("الرجاء لصق المفتاح أولاً!");
+                return;
+            }
+            localStorage.setItem('user_gemini_key', key);
+            alert("تم حفظ المفتاح بأمان في متصفح هاتفك! لن تحتاجه مجدداً.");
+            document.getElementById('apiSection').style.border = "1px solid #10b981";
+        }
+
+        async function generateScriptFromAI() {
             var topic = document.getElementById('topic').value.trim();
+            var duration = document.getElementById('duration').value;
+            var apiKey = localStorage.getItem('user_gemini_key') || document.getElementById('apiKey').value.trim();
+
+            if(!apiKey) {
+                alert("من فضلك الصق مفتاح الـ API الخاص بك أولاً واضغط حفظ ليتمكن الموقع من العمل!");
+                return;
+            }
             if(topic === "") {
-                alert("من فضلك أدخل عنواناً أو فكرة أولاً يا صديقي!");
+                alert("من فضلك أدخل عنواناً أو موضوعاً أولاً!");
                 return;
             }
 
             document.getElementById('loadingText').style.display = 'block';
             document.getElementById('resultBox').style.display = 'none';
 
-            setTimeout(function() {
-                document.getElementById('loadingText').style.display = 'none';
-                var output = "";
+            // صياغة الأمر الموجه لعقل الذكاء الاصطناعي بدقة
+            var promptText = `أنت صانع محتوى محترف ومخرج وثائقيات. اكتب سكربت فيديو يوتيوب كامل واحترافي باللغة العربية عن موضوع: "${topic}". مدة الفيديو المطلوبة هي: ${duration}. قم بتقسيم السكربت إلى: عنوان مقترح، مقدمة مشوقة مع المؤثرات الصوتية والبصرية بين أقواس مربعة []، مشاهد متسلسلة مشروحة، وخاتمة تحتوي على دعوة للتفاعل والاشتراك في القناة. اجعل الأسلوب جذاباً ومثيراً للاهتمام.`;
 
-                // 1. فحص موضوع الثورة الصناعية
-                if (topic.includes("الثورة الصناعية") || topic.includes("ثورة صناعية")) {
-                    output = "**🎬 عنوان الفيديو المقترح:** كيف غيّرت الآلة وجه البشرية؟\n\n" +
-                             "**[المقدمة - صوت جهوري هادئ مع صوت تروس حديدية وموسيقى وثائقية]**\n" +
-                             "تخيل أن تعيش في عالمٍ كل شيء فيه يُصنع يدوياً.. ملابسك، طعامك، وأدواتك. وفجأة، في منتصف القرن الثامن عشر، استيقظ العالم على صوت محركات البخار العملاقة. أهلاً بكم في قصة الانفجار الذي نقل البشرية من الحقول إلى المصانع: الثورة الصناعية.\n\n" +
-                             "**[المشهد الأول - البداية من بريطانيا]**\n" +
-                             "بدأ كل شيء في بريطانيا، حيث تحولت طاقة الفحم الحجري ومحركات جيمس واط البخارية إلى القوة المحركة للقرن الجديد. المصانع بدأت تنتج الملابس والحديد بسرعة البرق، مما جعل المدن تكتظ بملايين العمال.\n\n" +
-                             "**[الخاتمة والدعوة للإجراء]**\n" +
-                             "في النهاية، الثورة الصناعية لم تغير الآلات فقط، بل غيرت طريقة عيشنا وتفكيرنا إلى الأبد. لا تنسَ الإعجاب بالفيديو والاشتراك في القناة!";
-                } 
-                // 2. فحص موضوع الثقوب السوداء (الجديد)
-                else if (topic.includes("الثقوب السوداء") || topic.includes("ثقب أسود") || topic.includes("الثقب الاسود")) {
-                    output = "**🎬 عنوان الفيديو المقترح:** الوحوش الخفية: أسرار الثقوب السوداء التي لا تصدق!\n\n" +
-                             "**[المقدمة - موسيقى كونية غامضة وعميقة مع صمت مطبق]**\n" +
-                             "في عمق الكون السحيق، تقبع وحوش جاذبية خارقة، تملك من القوة ما يكفي لابتلاع نجوم بأكملها، بل وحتى الضوء نفسه لا يمكنه الهروب منها! إنها الثقوب السوداء.. الأماكن التي تتوقف عندها قوانين الفيزياء وتختفي فيها المفاهيم الحالية للزمن.\n\n" +
-                             "**[المشهد الأول - كيف يولد هذا الوحش؟]**\n" +
-                             "عندما يموت نجم عملاق أضخم من شمسنا بمرات عديدة، ينفجر في حدث كوني مرعب (سوبرنوفا)، ثم ينهار لبّه على نفسه تحت تأثير جاذبيته الخاصة، لينضغط كل ذلك الحجم الهائل في نقطة متناهية الصغر بكثافة لا نهائية.. تُدعى نقطة التفرد.\n\n" +
-                             "**[الخاتمة والدعوة للإجراء]**\n" +
-                             "الثقوب السوداء ليست مجرد مقابر للنجوم، بل قد تكون بوابات لأكوان أخرى لا نعلم عنها شيئاً. إذا كنت تعشق أسرار الفضاء، اضغط على زر الإعجاب واشترك معنا لتسافر في رحلتنا الكونية القادمة!";
-                } 
-                // 3. أي موضوع آخر لم نجهزه بعد
-                else {
-                    output = "✨ **مرحباً بك في جيكول AI** ✨\n\n" +
-                             "لقد استلمنا فكرتك الذكية الرائعة عن: **(" + topic + ")**.\n\n" +
-                             "جاري حالياً إعداد المحتوى الخاص بها في التحديث القادم.\n\n" +
-                             "💡 *تلميح المطور:* جرب الآن كتابة **'الثقوب السوداء'** أو **'الثورة الصناعية'** لتشاهد قوة التنقل التلقائي بين السكربتات المخصصة!";
+            try {
+                // الاتصال المباشر بـ API الخاص بـ Google Gemini
+                var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+                });
+
+                var data = await response.json();
+                document.getElementById('loadingText').style.display = 'none';
+
+                if(data.candidates && data.candidates[0].content.parts[0].text) {
+                    var aiText = data.candidates[0].content.parts[0].text;
+                    // تنظيف بعض العلامات مثل النجوم الزائدة لتبدو جميلة
+                    aiText = aiText.replace(/\*\*/g, '');
+                    document.getElementById('scriptOutput').innerText = aiText;
+                    document.getElementById('resultBox').style.display = 'block';
+                } else {
+                    document.getElementById('scriptOutput').innerText = "عذراً، حدث خطأ في استجابة الذكاء الاصطناعي. تأكد من صحة المفتاح.";
+                    document.getElementById('resultBox').style.display = 'block';
                 }
-                
-                document.getElementById('scriptOutput').innerText = output;
-                document.getElementById('resultBox').style.display = 'block';
-            }, 1500);
+
+            } catch (error) {
+                document.getElementById('loadingText').style.display = 'none';
+                alert("حدث خطأ أثناء الاتصال بالخادم، تأكد من اتصالك بالإنترنت وصحة المفتاح.");
+                console.error(error);
+            }
         }
     </script>
 
