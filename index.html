@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جيكول AI | النسخة المكتشفة للأخطاء</title>
+    <title>جيكول AI | المحرك الذكي المستقر</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,7 +40,7 @@
             text-align: right;
             color: #ffca28;
         }
-        input[type="text"], input[type="text"]#apiKey, select {
+        input[type="text"], select {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -50,7 +50,7 @@
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 1rem;
-            text-align: left; /* جعل النص يسار لكي يظهر المفتاح بوضوح عند اللصق */
+            text-align: left;
         }
         .btn {
             width: 100%;
@@ -100,11 +100,11 @@
 <body>
 
     <div class="container">
-        <h1>🚀 جيكول AI - كاشف الأخطاء والسكربتات</h1>
+        <h1>🚀 جيكول AI - المحرك الذكي الشامل</h1>
         
         <div class="api-section">
-            <label style="text-align: right;">مفتاح الـ API الخاص بك (تأكد أنه يبدأ بـ AIza):</label>
-            <input type="text" id="apiKey" placeholder="امسح أي شيء هنا ثم الصق المفتاح الحقيقي المنسوخ...">
+            <label style="text-align: right;">مفتاح الـ API الخاص بك من Google:</label>
+            <input type="text" id="apiKey" placeholder="الصق مفتاحك هنا...">
         </div>
 
         <label for="topic">عنوان الفيديو أو الفكرة الرئيسية:</label>
@@ -116,9 +116,9 @@
             <option value="متوسط (5 دقائق)">فيديو متوسط - 5 دقائق</option>
         </select>
 
-        <button class="btn" onclick="generateScriptFromAI()">توليد السكربت بالذكاء الاصطناعي ✨</button>
+        <button class="btn" onclick="generateScriptFromAI()">توليد السكربت بالذكاء الاصطناعي الحقيقي ✨</button>
 
-        <div class="loading" id="loadingText">جاري الاتصال بـ Gemini ومحاولة التوليد... 🧠</div>
+        <div class="loading" id="loadingText">جاري استدعاء العقل الاصطناعي وصياغة السكربت... 🧠</div>
 
         <div class="result-box" id="resultBox">
             <h3 id="resultTitle">📜 السكربت الذكي الجاهز:</h3>
@@ -133,7 +133,7 @@
             var apiKey = document.getElementById('apiKey').value.trim();
 
             if(!apiKey) {
-                alert("من فضلك الصق المفتاح في الخانة أولاً!");
+                alert("من فضلك الصق المفتاح أولاً!");
                 return;
             }
             if(topic === "") {
@@ -144,10 +144,11 @@
             document.getElementById('loadingText').style.display = 'block';
             document.getElementById('resultBox').style.display = 'none';
 
-            var promptText = `اكتب سكربت فيديو مشوق وقصير عن موضوع: "${topic}" وبمدة: ${duration}.`;
+            var promptText = `اكتب سكربت فيديو مشوق واحترافي ومتكامل باللغة العربية عن موضوع: "${topic}" وبمدة: ${duration}. قم بوضع توجيهات للمشاهد والمؤثرات الصوتية.`;
 
             try {
-                var response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                // تعديل الرابط إلى v1 المستقر والمدعوم رسمياً
+                var response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
@@ -157,24 +158,21 @@
                 document.getElementById('loadingText').style.display = 'none';
                 document.getElementById('resultBox').style.display = 'block';
 
-                // إذا نجح التوليد
                 if(data.candidates && data.candidates[0].content.parts[0].text) {
                     document.getElementById('resultTitle').innerText = "📜 السكربت الذكي الجاهز:";
                     document.getElementById('scriptOutput').innerText = data.candidates[0].content.parts[0].text;
-                } 
-                // إذا أرسلت جوجل رسالة خطأ محددة سنعرضها هنا فوراً
-                else if (data.error) {
-                    document.getElementById('resultTitle').innerText = "❌ خطأ قادم من سيرفر جوجل:";
-                    document.getElementById('scriptOutput').innerText = `رمز الخطأ: ${data.error.status}\nالرسالة: ${data.error.message}`;
+                } else if (data.error) {
+                    document.getElementById('resultTitle').innerText = "❌ خطأ في الإعدادات:";
+                    document.getElementById('scriptOutput').innerText = `الرسالة: ${data.error.message}`;
                 } else {
-                    document.getElementById('resultTitle').innerText = "❌ خطأ غير معروف:";
+                    document.getElementById('resultTitle').innerText = "❌ خطأ:";
                     document.getElementById('scriptOutput').innerText = JSON.stringify(data);
                 }
 
             } catch (error) {
                 document.getElementById('loadingText').style.display = 'none';
                 document.getElementById('resultBox').style.display = 'block';
-                document.getElementById('resultTitle').innerText = "❌ خطأ في الاتصال بالشبكة:";
+                document.getElementById('resultTitle').innerText = "❌ خطأ اتصال:";
                 document.getElementById('scriptOutput').innerText = error.message;
             }
         }
